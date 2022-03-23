@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'ble_tester.dart';
+import 'ble_manager.dart';
 
 void main() {
   runApp(const MyApp());
@@ -55,7 +55,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   static const platform = MethodChannel('b1.wegnerworks.com/requestBTPermissions');
   int _counter = 0;
-  BLETester bleTester = BLETester();
+  BLEManager bleTester = BLEManager();
 
   @override
   void initState() {
@@ -127,7 +127,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 IconButton(
                   icon: const Icon(Icons.adjust),
                   iconSize: 50,
-                  onPressed: () async { await bleTester.connectDevices(); }
+                  onPressed: () async {
+                    // await bleTester.connectDevices();
+                  }
+
                 ),
                 IconButton(
                   icon: const Icon(Icons.airplanemode_active),
