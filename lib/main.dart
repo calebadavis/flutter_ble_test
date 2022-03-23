@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'ble_manager.dart';
+import 'command/kaatsu_message.dart';
+import 'command/start_cmd.dart';
+import 'command/stop_cmd.dart';
+import 'isolates/message_loop.dart';
 
 void main() {
   runApp(const MyApp());
@@ -55,20 +59,24 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   static const platform = MethodChannel('b1.wegnerworks.com/requestBTPermissions');
   int _counter = 0;
-  BLEManager bleTester = BLEManager();
+  late MessageLoop ml;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     if (Platform.isAndroid) platform.invokeMethod('requestBTPermissions');
-    bleTester.updateDeviceCount = updateDeviceCount;
+    ml = MessageLoop(kaatsuMessageReceiver: receiveCmd);
   }
 
   void updateDeviceCount(int n) {
     setState(() {
       _counter = n;
     });
+  }
+
+  void receiveCmd(KaatsuMessage cmd) {
+    print("Received message from Isolate: ${cmd.cmdType.name}");
   }
 
   @override
@@ -121,7 +129,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     icon: const Icon(Icons.wifi_tethering),
                     iconSize: 50,
                     onPressed: () async {
-                      bleTester.scanForDevices();
+                      ml.start();
                     }
                 ),
                 IconButton(
@@ -135,12 +143,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 IconButton(
                   icon: const Icon(Icons.airplanemode_active),
                   iconSize: 50,
-                  onPressed: () { bleTester.sendStartCommand(); }
+                  onPressed: () { ml.sendCmd(StartCmd.outbound(duration: 10, pressure: 100)); }
                 ),
                 IconButton(
                     icon: const Icon(Icons.airplanemode_inactive),
                     iconSize: 50,
-                    onPressed: () { bleTester.sendStopCommand(); }
+                    onPressed: () { ml.sendCmd(StopCmd.outbound()); }
                 ),
               ]
             )

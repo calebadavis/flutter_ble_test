@@ -7,7 +7,7 @@ import 'command/start_cmd.dart';
 import 'command/stop_cmd.dart';
 
 class BLEManager {
-  FlutterBluePlus flutterBlue = FlutterBluePlus.instance;
+  late FlutterBluePlus flutterBlue;
   Map<String, BluetoothDevice> deviceMap = {};
   List<BluetoothCharacteristic> kaatsuCharacteristics = [];
   List<CommandManager> managers = [];
@@ -15,6 +15,7 @@ class BLEManager {
   Function(KaatsuMessage) cmdReceiver;
 
   BLEManager({required this.cmdReceiver}) {
+    flutterBlue = FlutterBluePlus.instance;
     flutterBlue.setLogLevel(LogLevel.error);
   }
 
@@ -54,26 +55,6 @@ class BLEManager {
   }
 
 
-  // Future<void> connectDevices() async {
-  //   for (BluetoothDevice d in deviceMap.values) {
-  //     await d.connect();
-  //     print('Connecting to Kaatsu Device: ${d.id}');
-  //     List<BluetoothService> services = await d.discoverServices();
-  //     services.forEach((service) async {
-  //       for(BluetoothCharacteristic c in service.characteristics) {
-  //         if (c.uuid.toString() == '0000fff6-0000-1000-8000-00805f9b34fb') {
-  //           kaatsuCharacteristics.add(c);
-  //           CommandManager cm = CommandManager(
-  //             kaatsuCharacteristic: c,
-  //             responseHandler: gotKaatsuMessage
-  //           );
-  //           managers.add(cm);
-  //
-  //         }
-  //       }
-  //     });
-  //   }
-  // }
 
   void send(KaatsuMessage msg) {
     for (CommandManager cm in managers) {
